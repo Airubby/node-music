@@ -35,44 +35,37 @@
         <!-- /.container-fluid -->
     </nav>
     <style>
-        .row {
-            border-bottom: 1px solid #ccc;
-            height: 40px;
-            line-height: 40px;
-        }
+
     </style>
-    <div class="container jumbotron">
-        <div class="row">
-            <div class="col-md-2 text-center">编号</div>
-            <div class="col-md-2 text-center">名称</div>
-            <div class="col-md-2 text-center">歌手</div>
-            <div class="col-md-2 text-center">超品质</div>
-            <div class="col-md-4 text-center">操作</div>
-        </div>
-        <% musicList.forEach(function(item){ %>
-            <div class="row">
-                <div class="col-md-2 text-center">
-                    <%= item.id %>
-                </div>
-                <div class="col-md-2 text-center">
-                    <%= item.name %>
-                </div>
-                <div class="col-md-2 text-center">
-                    <%= item.singer %>
-                </div>
-                <div class="col-md-2 text-center">
-                    <% if(item.isHightRate){ %>
-                        是
-                        <% }else{ %>
-                            否
-                            <% } %>
-                </div>
-                <div class="col-md-4 text-center">
-                    <a href="/edit/<%= item.id %>">编辑</a>
-                    <a href="/remove/<%= item.id %>">删除</a>
-                </div>
-            </div>
-            <%}) %>
+    <div class="container jumbotron text-center">
+        <form action="/edit/<%=musicInfo.id%>" method="post">
+            <p>
+                <label for="">编号</label>
+                <input type="text" name="id" value="<%=musicInfo.id%>" readonly>
+            </p>
+            <p>
+                <label for="">名称</label>
+                <input type="text" name="name" value="<%=musicInfo.name%>">
+            </p>
+            <p>
+                <label for="">歌手</label>
+                <input type="text" name="singer" value="<%=musicInfo.singer%>">
+            </p>
+            <p>
+                <label for="">超品质</label>
+                <% if(musicInfo.isHightRate==true){ %>
+                    <input type="radio" name="isHightRate" checked value="1">是
+                    <input type="radio" name="isHightRate" value="0">否
+                    <% }else{ %>
+                        <input type="radio" name="isHightRate" value="1">是
+                        <input type="radio" name="isHightRate" checked value="0">否
+                        <% } %>
+
+            </p>
+            <p>
+                <input type="submit" value="确认修改">
+            </p>
+        </form>
     </div>
 
 </body>

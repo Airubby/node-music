@@ -40,8 +40,15 @@ const musicList = [{
     }
 ];
 
+//  /edit/1
+
+let edit_reg = /^\/edit\/(\d{1,6})$/;
+
 
 const server = http.createServer(function(req, res) {
+
+    let method = req.method;
+
     if (req.url == "/") {
         fs.readFile("./public/index.html", "utf8", function(err, data) {
             if (err) {
@@ -91,6 +98,7 @@ const server = http.createServer(function(req, res) {
                     res.write("音乐编号已经存在");
                     return res.end();
                 }
+                isHightRate = isHightRate === '1' ? true : false;
                 musicList.push({
                     id,
                     name,
@@ -102,11 +110,51 @@ const server = http.createServer(function(req, res) {
 
             } else {
                 res.writeHead(200, { "Content-Type": "text/plain; charset=utf8" });
-                res.end("信息填写完整");
+                res.end("请信息填写完整");
             }
 
         });
 
+    } else if (method === "GET" && edit_reg.test(req.url)) {
+
+        fs.readFile("./public/edit.html", "utf8", function(err, data) {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+
+            let id = req.url.match(edit_reg)[1];
+            let musicInfo = musicList.find(item => item.id === id);
+
+            let complied = _.template(data);
+            let htmlStr = complied({
+                musicInfo: musicInfo
+            })
+            res.writeHead(200, { "Content-Type": "text/html" });
+            res.end(htmlStr);
+
+        });
+
+    } else if (method === "POST" && edit_reg.test(req.url)) { //要大写POST才可以
+        getPostData(req, function(data) {
+            let dataObj = qs.parse(data);
+            let id = dataObj.id;
+            let name = dataObj.name;
+            let singer = dataObj.singer;
+            let isHightRate = dataObj.isHightRate;
+
+            let index = musicList.findIndex(item => item.id === id);
+            musicList[index].name = name;
+            musicList[index].singer = singer;
+            musicList[index].isHightRate = isHightRate === '1' ? true : false;
+
+            //301永久重定向；302临时重定向
+            res.writeHead('302', {
+                'Location': 'http://127.0.0.1:4000/'
+            });
+            res.end(); //必须得end()不然重定向有问题
+
+        });
     }
 
 
